@@ -120,18 +120,18 @@ else
             })
         }
 
-        const objToSend = JSON.stringify({registros: personaArray})
+        const objToSend = JSON.stringify( personaArray)
 
-        //const resp = await fetch(`${URI}Home/GuardarRegistros`, {
-        //    method: 'POST',
-        //    headers: {
-        //        'Content-Type': 'application/json'
-        //    },
-        //    body: objToSend,
+        const resp = await fetch(`${URI}Home/GuardarRegistros`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: objToSend,
 
-        //});
+        });
 
-        //console.log( await resp.json())
+        console.log( await resp.json())
 
         //
 
@@ -139,11 +139,12 @@ else
 
         console.log(objToSend)
 
-        $.ajax({
-            type: "POST",
-            url: `${URI}Home/GuardarRegistros`,
-            data: objToSend,
-        });
+        //$.ajax({
+        //    type: "POST",
+        //    url: `${URI}api/GuardarTxT`,
+        //    data: objToSend,
+        //    data
+        //});
         
 
         
