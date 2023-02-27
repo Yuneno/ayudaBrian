@@ -1,0 +1,271 @@
+﻿@model List<Registro>
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+
+<div class="container">
+    <div class="card">
+        <form asp-action="Index" asp-controller="Home" method="post" enctype="multipart/form-data">
+            <div class="card-header">
+                <h1 class="card-title">Selector de Archivo</h1>
+            </div>
+            <div class="card-body">
+
+
+
+                <div class="form-group">
+                    <label for="Archivo" class="form-label">Archivo</label>
+                    <input id="fileInput" class="form-control" name="Archivo" accept=".txt" type="file" />
+                </div>
+
+
+            </div>
+            <div class="card-footer d-flex justify-content-start">
+                <button type="submit" class="btn btn-success">Enviar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<br />
+@if (Model != null && Model.Count > 0)
+{
+ 
+
+
+        <div class=" card-body">
+            <table class="table">
+
+                <thead>
+                    <tr>
+                        <th scope="col">Cedula</th>
+                        <th scope="col">Nombres</th>
+                        <th scope="col">Apellidos</th>
+                        <th scope="col">Sub</th>
+                        <th scope="col">Monto</th>
+                        <th scope="col">Fecha</th>
+                    </tr>
+                </thead>
+
+
+                <tbody id="myBody">
+                    @foreach (var registro in Model)
+                    {
+                        <tr>
+                            <td>
+                                @registro.Cedula
+                            </td>
+                            <td>
+                                @registro.Nombre
+                            </td>
+                            <td>
+                                @registro.Apellido
+                            </td>
+                            <td>
+                                @registro.Sub
+                            </td>
+                            <td>
+                                @registro.Monto
+                            </td>
+                            <td>
+                                @registro.Fecha
+                            </td>
+
+                            
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="card-footer d-flex justify-content-end">
+            <button class=" btn btn-warning" onclick="sendTable()"> Guardar Registros </button>
+        </div>
+    
+}
+else
+{
+    <h1>
+        Seleccione un archivo con registros para mostrar
+    </h1>
+}
+
+<script>
+    var personaArray = []
+
+
+
+
+
+    async function sendTable() {
+
+        var URI = `@Url.ActionLink("Index","Home")`
+
+   
+
+        console.log('URL: ',URI)
+
+        let tableInfo = document.getElementsByTagName('td');
+
+        for (let i = 0; i < tableInfo.length; i += 6) {
+            personaArray.push({
+                cedula: tableInfo[i].innerText,
+                nombre: tableInfo[i + 1].innerText,
+                apellido: tableInfo[i + 2].innerText,
+                sub: tableInfo[i + 3].innerText,
+                monto: tableInfo[i + 4].innerText,
+                fecha: tableInfo[i + 5].innerText,
+
+            })
+        }
+
+        const objToSend = JSON.stringify({registros: personaArray})
+
+        //const resp = await fetch(`${URI}Home/GuardarRegistros`, {
+        //    method: 'POST',
+        //    headers: {
+        //        'Content-Type': 'application/json'
+        //    },
+        //    body: objToSend,
+
+        //});
+
+        //console.log( await resp.json())
+
+        //
+
+        //console.log('URI de ASP:  ')
+
+        console.log(objToSend)
+
+        $.ajax({
+            type: "POST",
+            url: `${URI}Home/GuardarRegistros`,
+            data: objToSend,
+        });
+        
+
+        
+    }
+
+</script>
+
+
+
+@*    <br />
+    <div class=" card">
+        <div class=" card-header">
+            Lista de Registros
+        </div>
+        <div class=" card-body">
+            <table class="table">
+
+                <thead>
+                    <tr>
+                        <th scope="col">Cedula</th>
+                        <th scope="col">Nombres</th>
+                        <th scope="col">Apellidos</th>
+                        <th scope="col">Sub</th>
+                        <th scope="col">Monto</th>
+                        <th scope="col">Fecha</th>
+                    </tr>
+                </thead>
+
+
+                <tbody id="MyTablaBody">
+                </tbody>
+            </table>
+        </div>
+        <div class=" card-footer">
+            <button class="btn btn-success" id="btn-guardar">Guardar Registro de Personas</button>
+        </div>
+    </div>
+
+<script>
+
+    const inputFile = document.getElementById('fileInput');
+    const myTable = document.getElementById('MyTablaBody');
+    const btnGuardar = document.getElementById('btn-guardar');
+    const registros = [];
+
+    console.log(myTable)
+
+    btnGuardar.addEventListener('click', async (e) => {
+
+        console.log('En Boton: ', registros)
+
+        const personToSend = JSON.stringify(registros)
+
+        console.log(personToSend)
+
+        const resp = await fetch(`${e.target.baseURI}Home/GuardarRegistros`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            body: personToSend,
+
+            });
+
+        console.log(resp.json())
+    })
+
+
+    inputFile.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        const fileContent = new FormData();
+        fileContent.append("ArchivoTxT", file)
+        console.log(e.target.baseURI)
+        console.log(fileContent)
+
+
+
+        const resp = await fetch(`${e.target.baseURI}Home/GetPersonList`, {
+            method: 'POST',
+            body: fileContent
+        });
+
+        const personArray = await resp.json()
+
+        console.log(personArray)
+
+        personArray.forEach((person) => {
+            registros.push({ ...person })
+            const tr = document.createElement('tr');
+
+            const td1 = document.createElement('td')
+            const td2 = document.createElement('td')
+            const td3 = document.createElement('td')
+            const td4 = document.createElement('td')
+            const td5 = document.createElement('td')
+            const td6 = document.createElement('td')
+
+            td1.innerHTML = person.cedula
+            td2.innerHTML = person.nombre
+            td3.innerHTML = person.apellido
+            td4.innerHTML = person.sub
+            td5.innerHTML = person.monto
+            td6.innerHTML = person.fecha
+
+            console.log(td5)
+
+            tr.appendChild(td1)
+            tr.appendChild(td2)
+            tr.appendChild(td3)
+            tr.appendChild(td4)
+            tr.appendChild(td5)
+            tr.appendChild(td6)
+
+            myTable.appendChild(tr)
+
+        });
+
+        console.log(registros)
+
+
+
+    })
+
+
+</script>*@
