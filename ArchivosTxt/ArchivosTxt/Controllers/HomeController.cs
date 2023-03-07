@@ -74,69 +74,15 @@ namespace ArchivosTxt.Controllers
 
         private Registro GetRegistro(string line)
         {
-            var lineaList = line.Split(" ").ToList();
-            List<string> list = new List<string>();
-            var registro = new Registro();
-
-            foreach (var linea in lineaList)
+            var registro = new Registro
             {
-
-                if (linea != "")
-                {
-                    if (list.Count() == 0)
-                    {
-                        string cedula = linea.Substring(0, 11);
-                        string nombre = linea.Substring(11);
-
-                        int currentNombre = 0;
-                        string PrimerNombre = "";
-                        string SegundoNombre = "";
-
-                        for (int i = 0; i < nombre.Length; i++)
-                        {
-                            if (nombre[i].ToString() == nombre[i].ToString().ToUpper() && i == 0)
-                            {
-                                currentNombre = 1;
-                            }
-
-                            if (nombre[i].ToString() == nombre[i].ToString().ToUpper() && i > 0)
-                            {
-                                currentNombre = 2;
-                            }
-
-                            if (currentNombre == 1)
-                            {
-                                PrimerNombre += nombre[i];
-                            }
-                            else
-                            {
-                                SegundoNombre += nombre[i];
-                            }
-
-                        }
-
-                        list.Add(cedula);
-                        list.Add(PrimerNombre + " " + SegundoNombre);
-                    }
-                    else
-                    {
-                        list.Add(linea);
-                    }
-                }
-
+                Cedula = line.Substring(0, 11),
+                Apellido = line.Substring(11, 30),
+                Nombre = line.Substring(41, 30),
+                Sub = line.Substring(71, 4),
+                Monto = line.Substring(75, 9),
+                Fecha = line.Substring(84)
             };
-
-            string monto, fecha, sub;
-            sub = list[3].Substring(0, 4);
-            monto = list[3].Substring(5, 9);
-            fecha = list[3].Substring(10);
-
-            registro.Cedula = list[0];
-            registro.Apellido = list[1];
-            registro.Nombre = list[2];
-            registro.Sub = sub;
-            registro.Monto = monto.Substring(3);
-            registro.Fecha = fecha.Substring(3);
 
             return registro;
         }
